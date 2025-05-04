@@ -46,7 +46,7 @@ const Movies = () =>{
             movies.map((item, index)=>{
                 return (
                     <div key={index}>
-                        <SubCards subtitle={item.Title} subdescription={`Year: ${item.Year}`}></SubCards>
+                        <SubCards subtitle={item.Title} subdescription={`Year: ${item.Year}`} ></SubCards>
                     </div>
                 )
             })

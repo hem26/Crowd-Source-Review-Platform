@@ -5,6 +5,8 @@ const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../config");
 const router = express.Router();
 
+const {default: mongoose} = require("mongoose");
+
 const SignUpValidations = zod.object({
     firstName: zod.string(),
     lastName: zod.string(),
@@ -66,6 +68,8 @@ router.post("/signup", async(req, res)=>{
 })
 
 router.post("/signin", async(req,res)=>{
+    const session = await mongoose.startSession();
+
     const { success } = SignInValidations.safeParse(req.body);
     if(!success){
         res.status(411).json({
@@ -76,7 +80,7 @@ router.post("/signin", async(req,res)=>{
     const existingUser = await User.findOne({
         userName: req.body.userName,
         password: req.body.password
-    })
+    }).session(session)
 
     if(existingUser){
         const token = jwt.sign({
@@ -88,7 +92,9 @@ router.post("/signin", async(req,res)=>{
         })
         return;
     }
+
 })
+
 
 router.post("/addReview", async(req, res)=>{
     const { success } = AddReviewValidations.safeParse(req.body);
@@ -123,24 +129,49 @@ router.post("/addReview", async(req, res)=>{
 
 })
 
-router.put("/addReview/:id", async(req, res)=>{
-    const paramId = req.params.id;
-    const addReview_id = AddReview._id;
+router.get("/addReview/:id", async(req, res)=>{
+    try{
+        const getReviewById = await AddReview.findOne(req.params.id)
 
-    if(paramId === addReview_id){
-        await AddReview.update({
-            title: req.body.title,
-            category: req.body.category,
-            description: req.body.description
-        })
+        if(!getReviewById){
+            return res.status(404).json({
+                msg:"Not getting review because of error"
+            })
+        }
 
         res.status(200).json({
-            msg: "Review has been updated Successfully"
+            msg:"Review has been get successfully"
+        })
+    }catch{
+        res.status(500).json({
+            msg:"Server error"
+        })
+    }
+})
+
+router.put("/addReview/:id", async(req, res)=>{
+    try{
+        const updatedReview = await AddReview.findByIdAndUpdate(req.params.id, {
+            title:req.body.title,
+            category: req.body.category,
+            description: req.body.description
+        },
+            {new: true}
+        )
+        
+        if(!updatedReview){
+            res.status(404).json({
+                msg: "Review has not been updated"
+            })
+        }
+        res.status(200).json({
+            msg:"Review has been updated successfully"
         })
 
-    }else{
-        res.status(404).json({
-            msg: "The object ID has not found or missing"
+
+    }catch{
+        res.status(500).json({
+            msg:"Server error"
         })
     }
     
@@ -150,13 +181,26 @@ router.put("/addReview/:id", async(req, res)=>{
 router.delete("/addReview/:id", async(req, res)=>{
     const paramsId = req.params.id;
 
-    await AddReview.delete({
-        id: paramsId
-    })
+    try{
+        const deleteReview = await findByIdAndDelete(paramsId);
 
-    res.status(200).json({
-        msg: "The Review has been Deleted..."
-    })
+        if(!deleteReview){
+            res.status(404).json({
+                msg:"Not Deleted Yet"
+            })
+        }
+
+        res.status(200).json({
+            msg:"Review has been deleted"
+        })
+
+    }catch{
+        res.status(500).json({
+            msg:"Server error..."
+        })
+    }
+
+    
     
 })
 

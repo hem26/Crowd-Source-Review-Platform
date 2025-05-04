@@ -52,3 +52,12 @@ This platform enables you to add, update and create your own review and provides
 Inside the src folder --> components --> Button.jsx and Cards.jsx
            src folder --> pages --> Dashboard.jsx, Food.jsx, Hotel.jsx, LandingPage.jsx, Movies.jsx, Signin.jsx, Signup.jsx
            src folder --> App.css, App.jsx, index.css, main.jsx
+
+<h1> Performing CRUD Operations in Backend side.</h1>
+
+    Step 1 - Perform the operation add review, we use create function in MongoDB
+    Step 2 - Performing the read data through get - We apply try and catch in which we use try to provide findOne
+    Step 3 - Performing the update through id: We want params to use it in update.findByIdAndUpdate().
+    Step 4 - Performing the delete through id: We want params_id through request and use it delete.findByIdAndUpdate()
+    Step 5 - Status Code - 404 --> If operation fails, 200 --> It means OK and performs Operation, 500 --> Server fails
+
