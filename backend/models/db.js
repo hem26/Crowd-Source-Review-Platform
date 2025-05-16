@@ -1,6 +1,10 @@
+require('dotenv').config();
 const mongoose = require("mongoose");
 
-mongoose.connect("mongodb+srv://admin:hello@cluster0.355dg.mongodb.net/");
+mongoose.connect(process.env.MONGODB_URL,{
+    useNewUrlParser:true,
+    useUnifiedTopology:true
+});
 
 const UserSchema = mongoose.Schema({
     firstName: {
